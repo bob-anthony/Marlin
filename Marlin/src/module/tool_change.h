@@ -49,6 +49,10 @@
     extern bool enable_first_prime;
   #endif
 
+  #if EITHER(TOOLCHANGE_FS_PRIME_FIRST_USED, TOOLCHANGE_FILAMENT_SWAP)
+    extern bool first_tool_is_primed;
+  #endif
+
   #if ENABLED(TOOLCHANGE_FS_INIT_BEFORE_SWAP)
     extern bool toolchange_extruder_ready[EXTRUDERS];
   #endif

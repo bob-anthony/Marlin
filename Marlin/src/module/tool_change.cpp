@@ -1053,7 +1053,6 @@ void tool_change(const uint8_t new_tool, bool no_move/*=false*/) {
 
     // First tool priming. To prime again, reboot the machine.
     #if ENABLED(TOOLCHANGE_FS_PRIME_FIRST_USED)
-      static bool first_tool_is_primed = false;
       if (new_tool == old_tool && !first_tool_is_primed && enable_first_prime) {
         tool_change_prime();
         first_tool_is_primed = true;

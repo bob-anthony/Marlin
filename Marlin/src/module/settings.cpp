@@ -2889,6 +2889,10 @@ void MarlinSettings::reset() {
       enable_first_prime = false;
     #endif
 
+    #if EITHER(TOOLCHANGE_FS_PRIME_FIRST_USED, TOOLCHANGE_FILAMENT_SWAP)
+      first_tool_is_primed = false;
+    #endif
+
     #if ENABLED(TOOLCHANGE_PARK)
       constexpr xyz_pos_t tpxy = TOOLCHANGE_PARK_XY;
       toolchange_settings.enable_park = true;
