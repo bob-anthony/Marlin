@@ -1028,61 +1028,63 @@ void fast_line_to_current(const AxisEnum fr_axis) { _line_to_current(fr_axis, 0.
 
     FS_DEBUG(">>> tool_change_prime()");
 
-    if (!too_cold(active_extruder)) {
-      destination = current_position; // Remember the old position
+    if (too_cold(active_extruder)) {
+      FS_DEBUG("Priming Aborted -  Nozzle Too Cold!");
+      return; // Extruder too cold to prime
+    }
 
-      const bool ok = TERN1(TOOLCHANGE_PARK, all_axes_homed() && toolchange_settings.enable_park);
+    destination = current_position; // Remember the old position
 
-      #if HAS_FAN && TOOLCHANGE_FS_FAN >= 0
-        // Store and stop fan. Restored on any exit.
-        REMEMBER(fan, thermalManager.fan_speed[TOOLCHANGE_FS_FAN], 0);
-      #endif
+    const bool ok = TERN1(TOOLCHANGE_PARK, all_axes_homed() && toolchange_settings.enable_park);
 
-      // Z raise
+    #if HAS_FAN && TOOLCHANGE_FS_FAN >= 0
+      // Store and stop fan. Restored on any exit.
+      REMEMBER(fan, thermalManager.fan_speed[TOOLCHANGE_FS_FAN], 0);
+    #endif
+
+    // Z raise
+    if (ok) {
+      // Do a small lift to avoid the workpiece in the move back (below)
+      current_position.z += toolchange_settings.z_raise;
+      TERN_(HAS_SOFTWARE_ENDSTOPS, NOMORE(current_position.z, soft_endstop.max.z));
+      fast_line_to_current(Z_AXIS);
+      planner.synchronize();
+    }
+
+    // Park
+    #if ENABLED(TOOLCHANGE_PARK)
       if (ok) {
-        // Do a small lift to avoid the workpiece in the move back (below)
-        current_position.z += toolchange_settings.z_raise;
-        TERN_(HAS_SOFTWARE_ENDSTOPS, NOMORE(current_position.z, soft_endstop.max.z));
-        fast_line_to_current(Z_AXIS);
+        IF_DISABLED(TOOLCHANGE_PARK_Y_ONLY, current_position.x = toolchange_settings.change_point.x);
+        IF_DISABLED(TOOLCHANGE_PARK_X_ONLY, current_position.y = toolchange_settings.change_point.y);
+        #if NONE(TOOLCHANGE_PARK_X_ONLY, TOOLCHANGE_PARK_Y_ONLY)
+          SECONDARY_AXIS_CODE(
+            current_position.i = toolchange_settings.change_point.i,
+            current_position.j = toolchange_settings.change_point.j,
+            current_position.k = toolchange_settings.change_point.k,
+            current_position.u = toolchange_settings.change_point.u,
+            current_position.v = toolchange_settings.change_point.v,
+            current_position.w = toolchange_settings.change_point.w,
+          );
+        #endif
+        planner.buffer_line(current_position, MMM_TO_MMS(TOOLCHANGE_PARK_XY_FEEDRATE), active_extruder);
         planner.synchronize();
       }
+    #endif
 
-      // Park
-      #if ENABLED(TOOLCHANGE_PARK)
-        if (ok) {
-          IF_DISABLED(TOOLCHANGE_PARK_Y_ONLY, current_position.x = toolchange_settings.change_point.x);
-          IF_DISABLED(TOOLCHANGE_PARK_X_ONLY, current_position.y = toolchange_settings.change_point.y);
-          #if NONE(TOOLCHANGE_PARK_X_ONLY, TOOLCHANGE_PARK_Y_ONLY)
-            SECONDARY_AXIS_CODE(
-              current_position.i = toolchange_settings.change_point.i,
-              current_position.j = toolchange_settings.change_point.j,
-              current_position.k = toolchange_settings.change_point.k,
-              current_position.u = toolchange_settings.change_point.u,
-              current_position.v = toolchange_settings.change_point.v,
-              current_position.w = toolchange_settings.change_point.w,
-            );
-          #endif
-          planner.buffer_line(current_position, MMM_TO_MMS(TOOLCHANGE_PARK_XY_FEEDRATE), active_extruder);
-          planner.synchronize();
-        }
-      #endif
+    extruder_prime();
+     // Move back
+    #if ENABLED(TOOLCHANGE_PARK)
+      if (ok) {
+        #if ENABLED(TOOLCHANGE_NO_RETURN)
+          const float temp = destination.z;
+          destination = current_position;
+          destination.z = temp;
+        #endif
+        prepare_internal_move_to_destination(TERN(TOOLCHANGE_NO_RETURN, planner.settings.max_feedrate_mm_s[Z_AXIS], MMM_TO_MMS(TOOLCHANGE_PARK_XY_FEEDRATE)));
+      }
+    #endif
 
-      extruder_prime();
-
-      // Move back
-      #if ENABLED(TOOLCHANGE_PARK)
-        if (ok) {
-          #if ENABLED(TOOLCHANGE_NO_RETURN)
-            const float temp = destination.z;
-            destination = current_position;
-            destination.z = temp;
-          #endif
-          prepare_internal_move_to_destination(TERN(TOOLCHANGE_NO_RETURN, planner.settings.max_feedrate_mm_s[Z_AXIS], MMM_TO_MMS(TOOLCHANGE_PARK_XY_FEEDRATE)));
-        }
-      #endif
-
-      extruder_cutting_recover(destination.e); // Cutting recover
-    }
+    extruder_cutting_recover(destination.e); // Cutting recover
 
     FS_DEBUG("<<< tool_change_prime");
 
