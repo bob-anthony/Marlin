@@ -29,6 +29,7 @@
 #if HAS_MARLINUI_MENU
 
 #include "menu_item.h"
+#include "../../MarlinCore.h"
 #include "../../module/planner.h"
 
 #if DISABLED(NO_VOLUMETRICS)
@@ -351,7 +352,8 @@ void menu_backlash();
       #if ENABLED(MPC_INCLUDE_FAN)
         #define MPC_EDIT_ITEMS(N) \
           _MPC_EDIT_ITEMS(N); \
-          EDIT_ITEM_FAST_N(float43, N, MSG_MPC_AMBIENT_XFER_COEFF_FAN255_E, &editable.decimal, 0, 1, []{ \
+          EDIT_ITEM_FAST_N(float43, N, MSG_MPC_AMBIENT_XFER_COEFF_FAN_E, &editable.decimal, 0, 1, []{ \
+            MPC_t &c = thermalManager.temp_hotend[MenuItemBase::itemIndex].constants; \
             c.fan255_adjustment = editable.decimal - c.ambient_xfer_coeff_fan0; \
           })
       #else
@@ -359,14 +361,14 @@ void menu_backlash();
       #endif
 
       #if HAS_MULTI_HOTEND
-        auto mpc_edit_hotend = [&](const uint8_t e) {
+        static auto mpc_edit_hotend = [](const uint8_t e) {
           MPC_EDIT_DEFS(e);
           START_MENU();
           BACK_ITEM(MSG_TEMPERATURE);
           MPC_EDIT_ITEMS(e);
           END_MENU();
         };
-        #define MPC_ENTRY(N) SUBMENU_N(N, MSG_MPC_EDIT, [&]{ mpc_edit_hotend(MenuItemBase::itemIndex); });
+        #define MPC_ENTRY(N) SUBMENU_N(N, MSG_MPC_EDIT, []{ mpc_edit_hotend(MenuItemBase::itemIndex); });
       #else
         #define MPC_ENTRY MPC_EDIT_ITEMS
       #endif
