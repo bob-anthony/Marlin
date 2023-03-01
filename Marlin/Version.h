@@ -169,7 +169,7 @@
 #elif(ENABLED(MachineCR10Orig))
   #define CUSTOM_MACHINE_NAME "SuPeR CR-10"
 #elif(ENABLED(MachineCRX))
-  #define CUSTOM_MACHINE_NAME "TM3D CR-X"
+  #define CUSTOM_MACHINE_NAME "BDScripting CRX"
 #elif ENABLED(MachineCR10SProV2)
   #define CUSTOM_MACHINE_NAME "TM3D 10SProV2"
 #elif(ENABLED(MachineCR10SPro))

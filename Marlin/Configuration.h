@@ -155,7 +155,7 @@
 //#define DualFilSensors //Using dual filament sensors on XMax and YMAX
 //#define FilamentEncoder //Using filamet jam sensor such as the Bigtreetech Encoder wheel
 
-//#define PurgeBucket //Adds automatic wiping on tool change if purge bucket is installed
+#define PurgeBucket //Adds automatic wiping on tool change if purge bucket is installed
 
 // Advanced options - Not for most users
 
@@ -332,7 +332,7 @@
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "TinyMachines3D" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "BDScripting" // Who made the changes.
 #define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -1486,9 +1486,9 @@
         #define  DEFAULT_Ki 0.89
         #define  DEFAULT_Kd 61.22
       #elif ENABLED(MachineCRX)
-        #define DEFAULT_Kp 19.00
-        #define DEFAULT_Ki 1.40
-        #define DEFAULT_Kd 66.00
+        #define DEFAULT_Kp 19.72
+        #define DEFAULT_Ki 1.50
+        #define DEFAULT_Kd 65.04
       #elif ENABLED(MachineCR10SV2)
         #define  DEFAULT_Kp 19.47
         #define  DEFAULT_Ki 1.59
@@ -1627,9 +1627,9 @@
     #define DEFAULT_bedKi 1.17
     #define DEFAULT_bedKd 1349.52
   #else
-    #define  DEFAULT_bedKp 690.34
-    #define  DEFAULT_bedKi 111.47
-    #define  DEFAULT_bedKd 1068.83
+    #define  DEFAULT_bedKp 180.02
+    #define  DEFAULT_bedKi 35.44
+    #define  DEFAULT_bedKd 609.60
   #endif
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
@@ -2151,7 +2151,7 @@
 #elif ENABLED(MachineCR2020)
   #define EStepsmm 113
 #else
-  #define EStepsmm 95
+  #define EStepsmm 95.9
 #endif
 
 #if ANY(MachineEnder5Plus, MachineCR5)
@@ -2200,11 +2200,11 @@
   #define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
   #define DEFAULT_TRAVEL_ACCELERATION   300    // X, Y, Z acceleration for travel (non printing) moves
 #elif (ENABLED(MachineCR10Std))
-  #define DEFAULT_MAX_FEEDRATE          { 500, 500, 10, 75 }
-  #define DEFAULT_MAX_ACCELERATION      { 1500, 1500, 100, 75 }
-  #define DEFAULT_ACCELERATION          750    // X, Y, Z and E acceleration for printing moves
-  #define DEFAULT_RETRACT_ACCELERATION  1000    // E acceleration for retracts
-  #define DEFAULT_TRAVEL_ACCELERATION   300    // X, Y, Z acceleration for travel (non printing) moves
+  #define DEFAULT_MAX_FEEDRATE          { 750, 750, 15, 75 }
+  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 5000 }
+  #define DEFAULT_ACCELERATION          500    // X, Y, Z and E acceleration for printing moves
+  #define DEFAULT_RETRACT_ACCELERATION  750    // E acceleration for retracts
+  #define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
 #elif ENABLED( MachineS4)
   #define DEFAULT_MAX_FEEDRATE          { 500, 400, 10, 75 }
   #define DEFAULT_MAX_ACCELERATION      { 1000, 750, 100, 75 }
@@ -2275,9 +2275,9 @@
     #define DEFAULT_YJERK 20.0
   #else
     #define DEFAULT_XJERK 10.0
-    #define DEFAULT_YJERK 5.0
+    #define DEFAULT_YJERK 8.0
   #endif
-  #define DEFAULT_ZJERK  0.3
+  #define DEFAULT_ZJERK  0.4
   //#define DEFAULT_IJERK  0.3
   //#define DEFAULT_JJERK  0.3
   //#define DEFAULT_KJERK  0.3
@@ -2317,7 +2317,7 @@
  * See https://github.com/synthetos/TinyG/wiki/Jerk-Controlled-Motion-Explained
  */
 #if NONE(MachineCR10Orig, SKRMiniE3V2, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro) || ENABLED(MelziHostOnly)
-  #define S_CURVE_ACCELERATION
+  //#define S_CURVE_ACCELERATION
 #endif
 
 //===========================================================================
@@ -2635,7 +2635,7 @@
 #if ENABLED(ABL_BLTOUCH)
   #define PROBING_MARGIN 3
 #else
-  #define PROBING_MARGIN 10
+  #define PROBING_MARGIN 30
 #endif
 
 // X and Y axis travel speed (mm/min) between probes
@@ -3076,7 +3076,7 @@
     #define Z_MAX_POS 400
     #define X_MAX_POS 315
     #define Y_MAX_POS 308
-    #define ClipClearance 15
+    #define ClipClearance 8
   #elif ENABLED(MachineCR10SProV2)
     #define X_BED_SIZE 300
     #define Y_BED_SIZE 300
@@ -3376,9 +3376,9 @@
 /**
  * Auto-leveling needs preheating
  */
-//#define PREHEAT_BEFORE_LEVELING
+#define PREHEAT_BEFORE_LEVELING
 #if ENABLED(PREHEAT_BEFORE_LEVELING)
-  #define LEVELING_NOZZLE_TEMP 120   // (°C) Only applies to E0 at this time
+  #define LEVELING_NOZZLE_TEMP 150   // (°C) Only applies to E0 at this time
   #define LEVELING_BED_TEMP     50
 #endif
 
@@ -3402,7 +3402,7 @@
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_UBL, PROBE_MANUALLY)
   // Set a height for the start of manual adjustment
-  #define MANUAL_PROBE_START_Z 0.2  // (mm) Comment out to use the last-measured height
+  //#define MANUAL_PROBE_START_Z 0.2  // (mm) Comment out to use the last-measured height
 #endif
 
 #if ANY(MESH_BED_LEVELING, AUTO_BED_LEVELING_BILINEAR, AUTO_BED_LEVELING_UBL)
@@ -3432,7 +3432,7 @@
    * Enable the G26 Mesh Validation Pattern tool.
    */
 #if NONE(MachineCR10Orig, SKRMiniE3V2)
-  #define G26_MESH_VALIDATION   // Enable G26 mesh validation
+  //#define G26_MESH_VALIDATION   // Enable G26 mesh validation
 #endif
   #if ENABLED(G26_MESH_VALIDATION)
     #define MESH_TEST_NOZZLE_SIZE    0.4  // (mm) Diameter of primary nozzle.
@@ -3524,7 +3524,7 @@
 #elif ENABLED(MachineCR10SV2)
   #define MESH_INSET 30
 #else
-  #define MESH_INSET 20          // Set Mesh bounds as an inset region of the bed
+  #define MESH_INSET 30          // Set Mesh bounds as an inset region of the bed
 #endif
   //#define GRID_MAX_POINTS_X 3    // Don't use more than 7 points per axis, implementation limited.
   //#define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
@@ -3554,9 +3554,9 @@
   #define LCD_BED_TRAMMING
 #endif
 #if ENABLED(LCD_BED_TRAMMING)
-  #define BED_TRAMMING_INSET_LFRB { 22, 22, 22, 22 } // (mm) Left, Front, Right, Back insets
-  #define BED_TRAMMING_HEIGHT      0.0        // (mm) Z height of nozzle at leveling points
-  #define BED_TRAMMING_Z_HOP       4.0        // (mm) Z height of nozzle between leveling points
+  #define BED_TRAMMING_INSET_LFRB { 22, 30, 30, 30 } // (mm) Left, Front, Right, Back insets
+  #define BED_TRAMMING_HEIGHT      0.2        // (mm) Z height of nozzle at leveling points
+  #define BED_TRAMMING_Z_HOP       5.0        // (mm) Z height of nozzle between leveling points
   //#define BED_TRAMMING_INCLUDE_CENTER       // Move to the center after the last corner
   //#define BED_TRAMMING_USE_PROBE
   #if ENABLED(BED_TRAMMING_USE_PROBE)
@@ -3744,13 +3744,13 @@
 //
 #define PREHEAT_1_LABEL       "PLA"
 #define PREHEAT_1_TEMP_HOTEND 180
-#define PREHEAT_1_TEMP_BED     70
+#define PREHEAT_1_TEMP_BED     50
 #define PREHEAT_1_TEMP_CHAMBER 35
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
-#define PREHEAT_2_LABEL       "ABS"
-#define PREHEAT_2_TEMP_HOTEND 240
-#define PREHEAT_2_TEMP_BED    110
+#define PREHEAT_2_LABEL       "PETG"
+#define PREHEAT_2_TEMP_HOTEND 210
+#define PREHEAT_2_TEMP_BED    70
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
@@ -3774,10 +3774,10 @@
   #if(ANY(MachineEnder2, MachineEnder2Pro))
     #define NOZZLE_PARK_POINT { (0), (0), 10 }
   #else
-    #define NOZZLE_PARK_POINT { (50), (10), 10 }
+    #define NOZZLE_PARK_POINT { (315), (10), 10 }
   #endif
 
-  #define NOZZLE_PARK_MOVE          0   // Park motion: 0 = XY Move, 1 = X Only, 2 = Y Only, 3 = X before Y, 4 = Y before X
+  #define NOZZLE_PARK_MOVE          1   // Park motion: 0 = XY Move, 1 = X Only, 2 = Y Only, 3 = X before Y, 4 = Y before X
   #define NOZZLE_PARK_Z_RAISE_MIN   2   // (mm) Always raise Z by at least this distance
 #define NOZZLE_PARK_XY_FEEDRATE 50   // X and Y axes feedrate in mm/s (also used for delta printers Z axis)
 #define NOZZLE_PARK_Z_FEEDRATE 5      // Z axis feedrate in mm/s (not used for delta printers)
@@ -3833,7 +3833,7 @@
   // Dual hotend system may use { {  -20, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) },  {  420, (Y_BED_SIZE / 2), (Z_MIN_POS + 1) }}
 
   #define NOZZLE_CLEAN_START_POINT { X_MAX_POS, 40, (Z_MIN_POS + 1)}
-  #define NOZZLE_CLEAN_END_POINT   { (X_MAX_POS - 10), 40, (Z_MIN_POS + 1) }
+  #define NOZZLE_CLEAN_END_POINT   { (X_MAX_POS - 15), 40, (Z_MIN_POS + 1) }
 
   // Circular pattern radius
   #define NOZZLE_CLEAN_CIRCLE_RADIUS 6.5
@@ -3849,11 +3849,11 @@
   #define NOZZLE_CLEAN_NO_Z
 
   // For a purge/clean station mounted on the X axis
-  //#define NOZZLE_CLEAN_NO_Y
+  #define NOZZLE_CLEAN_NO_Y
 
   // Require a minimum hotend temperature for cleaning
   #define NOZZLE_CLEAN_MIN_TEMP 170
-  //#define NOZZLE_CLEAN_HEATUP       // Heat up the nozzle instead of skipping wipe
+  #define NOZZLE_CLEAN_HEATUP       // Heat up the nozzle instead of skipping wipe
 
   // Explicit wipe G-code script applies to a G12 with no arguments.
   //#define WIPE_SEQUENCE_COMMANDS "G1 X-17 Y25 Z10 F4000\nG1 Z1\nM114\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 X-17 Y25\nG1 X-17 Y95\nG1 Z15\nM400\nG0 X-10.0 Y-9.0"
